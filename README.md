@@ -17,11 +17,52 @@ I spent a while trying to find an app or website that lets me track workouts/wei
 5. Rewards
   To help incentivise workouts, reading, finishing games, and general goal achievements, some activities will add to your earned rewards. 
   
-  |Activity    |Reward      |
-  ---------------------------
-  |Workouts | $3 per workout
-6. History
+Activity | Reward 
+--- | --- 
+Steps | $1 per 1000 
+Workouts | $3 per workout
+Weight | $5 per kg lost
+Books | $100 per book read
+Games | $10 per game completed
+Udemy Courses | $50 per Udemy course completed
+Other | Activities set as Other can have custom amounts assigned to them and this sums them
 
+6. History
+  I haven't implemented this yet, but it will be graphs with hostory or weight, workouts, exercises, etc.
+  
 ##Coming Soon
 
+I'll add all of these into hte bug tracking, with more details of what I need to do, and how I'm doing it
+
+###Workouts
+
+ +Adding workouts
+ 
+ +Adding Exercises
+ 
+ +Searching and Sorting Exercises
+ 
+ 
+###Weight
+ +Easy access to progress photos
+ 
+ +Generate progress photos between dates
+ 
+
+###History
+ +Weight
+ 
+ +Workout
+ 
+ +Stretching
+ 
+ +Exercises
+ 
+
+###Rewards
+
+ +Changing values for activities
+ 
+ +Adding custom activity sections
+ 
 
