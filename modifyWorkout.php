@@ -1,4 +1,5 @@
 <?php
+if(!isset($_COOKIE['user'])){header( 'Location: index.php' ) ;}
 #connect to DB
 $servername = "localhost";
 $details = parse_ini_file("creds.ini");
@@ -13,16 +14,62 @@ $conn = mysqli_connect($servername, $username, $password, $dbname);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
-
+//Check POST
+//Workout A
+if(isset($_POST['submitA'])){
+  $newWorkoutA = array_slice($_POST['newWorkoutA'], 1);
+  $newWorkoutA = join(';', $newWorkoutA);
+  $sql = "UPDATE workoutaba SET a='".$newWorkoutA."' WHERE id='1'";
+  mysqli_query($conn, $sql);
+}
+//Workout B
+if(isset($_POST['submitB'])){
+  $newWorkoutB = array_slice($_POST['newWorkoutB'], 1);
+  $newWorkoutB = join(';', $newWorkoutB);
+  $sql = "UPDATE workoutaba SET b='".$newWorkoutB."' WHERE id='1'";
+  mysqli_query($conn, $sql);
+}
+//Adding an Exercise
+if(isset($_POST['exerciseSubmit'])){
+  echo("POST SET");
+        $exerciseName = $_POST['exerciseName'];
+        $exerciseVideo = $_POST['exerciseVideo'];
+        $exerciseVideo = mysqli_real_escape_string($conn, $exerciseVideo);
+        $exerciseMuscleGroup = $_POST['exerciseMuscleGroup'];
+        $exerciseMuscle = $_POST['exerciseMuscle'];
+        $sql = "INSERT INTO exercises (Exercise, musclegroup, muscle, video, dateAdded) VALUES ('" . $exerciseName . "',' " . $exerciseMuscleGroup . "','" . $exerciseMuscle . "','" . $exerciseVideo . "','" . $today ."')";
+        if (mysqli_query($conn, $sql)) {
+        } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        }
+    }
 //Variables
-$workoutA = '';
-$workoutB = '';
-$allExercises = '';
+$workoutA = array();
+$workoutB = array();
+$allExercises = array();
 
+//Get workouts and exercises as arrays
 //Get workout A
-$sql = "SELECT"
-
-
+$sql = "SELECT a FROM workoutaba";
+$result = mysqli_query($conn, $sql);
+while($row = mysqli_fetch_assoc($result)) {
+  $exercises = $row['a'];
+  $workoutA = explode(";", $exercises);
+}
+//Get workout B
+$sql = "SELECT b FROM workoutaba";
+$result = mysqli_query($conn, $sql);
+while($row = mysqli_fetch_assoc($result)) {
+  $exercises = $row['b'];
+  $workoutB = explode(";", $exercises);
+}
+//Get exercises
+$sql = "SELECT Exercise from exercises";
+$result = mysqli_query($conn, $sql);
+while($row = mysqli_fetch_assoc($result)) {
+  $exercise = $row['Exercise'];
+  array_push($allExercises, $exercise);
+}
 
 
 ?><!doctype html>
@@ -53,18 +100,51 @@ $sql = "SELECT"
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script>
 $( function() {
+
+    $('#remove').droppable({
+        drop: function(event, ui) {
+            if (!$(ui).hasClass('exercise')){
+              ui.draggable.remove();
+            }
+            
+        }
+    });
     $( "#sortable, #sortable2" ).sortable({
       revert: true
     });
-    $( "#sortable3, #sortable4" ).draggable({
+    $( ".exercise" ).draggable({
       connectToSortable: "#sortable, #sortable2",
       helper: "clone",
       revert: "invalid"
     });
     $( "ul, li" ).disableSelection();
   } );
-    
+function update(){
+    $( ".exercise" ).draggable({
+      connectToSortable: "#sortable, #sortable2",
+      helper: "clone",
+      revert: "invalid"
+    });
+}  
   </script>
+  <script>
+function showHint(str) {
+    if (str.length == 0) { 
+        document.getElementById("txtHint").innerHTML = "";
+        return;
+    } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("txtHint").innerHTML = this.responseText;
+                update();
+            }
+        };
+        xmlhttp.open("GET", "getExercises.php?q=" + str, true);
+        xmlhttp.send();
+    }
+}
+</script>
 </head>
 <body>
     <div class="container-fluid">
@@ -80,32 +160,44 @@ $( function() {
 
         <div class="row">
             <div class="col-md-2">
+            <br/>
+            <br/>
+            <br/>
+              <ul>
+                <li id="remove" class="alert alert-danger">Remove</li>
+              </ul>
             </div>
             <div class-"col-md-2">
                 <h2>Workout A</h2><br />
-                <ul id="sortable">
-                  <li class="ui-state-default">Squat</li>
-                  <li class="ui-state-default">Bench Press</li>
-                  <li class="ui-state-default">Chinup</li>
-                  <li class="ui-state-default">Calf Raise</li>
-                  <li class="ui-state-default">Dead Bug</li>
-                  <li class="ui-state-default">Ropes Single</li>
-                  <li class="ui-state-default">Chest Press</li>
-                </ul>
+                <form name="workoutA" action="modifyWorkout.php" method="POST">
+                  <ul id="sortable">
+                    <input type="hidden" name="newWorkoutA[]" value="A">
+                    <?php
+                      #Generate the list of workout A exercises
+                      foreach ($workoutA as $exercise) {
+                        echo('<li class="ui-state-default">'.$exercise.'<input type="hidden" name="newWorkoutA[]" value="'. $exercise .'"></li>');
+                      }
+                    ?>
+                  </ul>
+                  <input type="submit" name="submitA" value="Submit Workout A">
+                </form>
             </div>
             <div class="col-md-1">
             </div>
             <div class-"col-md-2">
                 <h2>Workout B</h2><br />
-                <ul id="sortable2">
-                  <li class="ui-state-default">Squat</li>
-                  <li class="ui-state-default">Press</li>
-                  <li class="ui-state-default">Pullup</li>
-                  <li class="ui-state-default">Calf Raise</li>
-                  <li class="ui-state-default">Russian Twist</li>
-                  <li class="ui-state-default">Ropes Double</li>
-                  <li class="ui-state-default">Leg Press</li>
-                </ul>
+                <form name="workoutB" action="modifyWorkout.php" method="POST">
+                  <ul id="sortable2">
+                    <input type="hidden" name="newWorkoutB[]" value="B">
+                  <?php
+                      #Generate the list of workout B exercises
+                      foreach ($workoutB as $exercise) {
+                        echo('<li class="ui-state-default">'.$exercise.'<input type="hidden" name="newWorkoutB[]" value="'. $exercise .'"></li>');
+                      }
+                    ?>
+                  </ul>
+                  <input type="submit" name="submitB" value="Submit Workout B">
+                </form>
             </div>
             <div class="col-md-1">
             </div>
@@ -120,28 +212,128 @@ $( function() {
                     </div>
                 </div> 
                 <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                                 <ul >
-                                  <li id="sortable3" class="ui-state-default">Squat</li>
-                                  <li id="sortable4" class="ui-state-default">Press</li>
-                                  <li class="ui-state-default">Pullup</li>
-                                  <li class="ui-state-default">Calf Raise</li>
-                                  <li class="ui-state-default">Russian Twist</li>
-                                  <li class="ui-state-default">Ropes Double</li>
-                                  <li class="ui-state-default">Leg Press</li>
+                                  <?php
+                                    for($i = 0; $i < sizeof($allExercises); $i += 3){
+                                      echo('<li id="removeable" class="ui-state-default exercise">'. $allExercises[$i] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i] .'"></li>');
+
+                                    }
+                                  ?>
                                 </ul>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                                 <ul >
-                                  <li class="ui-state-default">Squat</li>
-                                  <li class="ui-state-default">Press</li>
-                                  <li class="ui-state-default">Pullup</li>
-                                  <li class="ui-state-default">Calf Raise</li>
-                                  <li class="ui-state-default">Russian Twist</li>
-                                  <li class="ui-state-default">Ropes Double</li>
-                                  <li class="ui-state-default">Leg Press</li>
+                                <?php
+                                    for($i = 1; $i < sizeof($allExercises); $i += 3){
+                                      echo('<li id="removeable" class="ui-state-default exercise">'. $allExercises[$i] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i] .'"></li>');
+
+                                    }
+                                  ?>
+                                  
                                 </ul>
                         </div>
+                        <div class="col-md-4">
+                                <ul >
+                                  <?php
+                                    for($i = 2; $i < sizeof($allExercises); $i += 3){
+                                      echo('<li id="removeable" class="ui-state-default exercise">'. $allExercises[$i] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i] .'"></li>');
+
+                                    }
+                                  ?>
+                                </ul>
+                        </div>
+                        <ul>
+                            <button type='button' class='btn btn-primary' data-toggle='modal' data-target='#addExercise'>Add an Exercise</button>
+                        </ul>
+                         <!-- Modal -->
+                    <div class="modal fade" id="addExercise" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add An Exercise</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-1">
+                                </div>
+                                <div class="col-md-10">
+                                    <form action="modifyWorkout.php" method="POST">
+                                        <table>
+                                        <tr>
+                                            <td>
+                                                Name:
+                                            </td>
+                                            <td>
+                                                <input name="exerciseName" type="text">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Group:
+                                            </td>
+                                            <td>
+                                                <select name="exerciseMuscleGroup">
+                                                    <option value="default">--Select a Group--</option>
+                                                    <option value="arms">Arms</option>
+                                                    <option value="legs">Legs</option>
+                                                    <option value="back">Back</option>
+                                                    <option value="torso">Torso</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Muscle:
+                                            </td>
+                                            <td>
+                                                <input name="exerciseMuscle" type="text">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Video:
+                                            </td>
+                                            <td>
+                                                <input name="exerciseVideo" type="text">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                
+                                            </td>
+                                            <td>
+                                                <input name="exerciseSubmit" type="submit" value="Submit">
+                                            </td>
+                                        </tr>
+                                        </table>
+                                    </form>
+                                </div>
+                                <div class="col-md-1">
+                                </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button style="float:left" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              Close
+                            </button>
+                          <br />
+                        </div>  
+                        </div>
+                      </div>
+                    
+                      <br />
+                      <br />
+                    </div>
+                        <form> 
+                        <br /><br />
+                          Search <input type="text" onkeyup="showHint(this.value)">
+                        </form>
+                        <p>Suggestions:<ul id="txtHint"></ul></p>
+
                 
             </div>
             <div class="col-md-2">

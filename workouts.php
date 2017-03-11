@@ -1,10 +1,12 @@
 <?php
 #connect to DB
 $servername = "localhost";
+#pull details from creds.ini
 $details = parse_ini_file("creds.ini");
 $username = $details['username'];
 $password = $details['password'];
 $dbname = "fitness";
+#get todays date
 $today =  date("Y-m-d");
 
 // Create connection
@@ -16,6 +18,7 @@ if (!$conn) {
 #check for and parse POST data
 if(isset($_POST['submit'])){
     $schedule = explode(";", $_POST['schedule']);
+    #create SQL request for each activity, pulling POST data in for the values to submit to the db
     foreach($schedule as $exercise){
         if($exercise === 'Squat'){
             $sql = "INSERT INTO workouts (exercise, sets, reps, weight, date) VALUES ('Squat', '" . $_POST['Squat_sets'] ."', '" . $_POST['Squat_reps'] . "', '" . $_POST['Squat_weight'] . "', '" . $today . "')";
@@ -75,7 +78,7 @@ if(isset($_POST['submit'])){
         }
 
 
-
+        #send the query
         mysqli_query($conn, $sql);
         
     }
@@ -95,7 +98,7 @@ $forms = array();
 
 
 
-
+#Get the workout
 $sql = "SELECT * FROM workoutaba";
 $result = mysqli_query($conn, $sql);
 
@@ -106,7 +109,7 @@ if (mysqli_num_rows($result) > 0) {
     }
 }
 
-
+#figure out what workout we did last, then do the other one
 $lastWorkout = $info['last'];
 #todays workout is the oppposite if the last one
 if ($lastWorkout === 'a'){
@@ -115,13 +118,13 @@ if ($lastWorkout === 'a'){
 #get the schedule
 $schedule = explode(";", $info["$todayWorkout"]);
 
-#get the form for each exercise
+#Generate
 
 foreach($schedule as $exercise){
     $sql = "SELECT * FROM exercises WHERE exercise = '$exercise'";
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) > 0) {
-        //Assign value
+        
         while($row = mysqli_fetch_assoc($result)) {
             $newForm = array();
             $attributes = $row['Attributes'];
