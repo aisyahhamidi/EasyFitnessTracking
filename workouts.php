@@ -147,12 +147,12 @@ foreach($schedule as $exercise){
                 array_push($newForm, $toAdd);
             }
 
-            
             array_push($forms, $newForm);
         }       
     }
 }
 mysqli_close($conn);
+
 
 if(!isset($_COOKIE['user'])){header( 'Location: index.php' ) ;}
 ?>

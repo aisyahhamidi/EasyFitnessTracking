@@ -36,8 +36,8 @@ if(isset($_POST['exerciseSubmit'])){
         $exerciseVideo = mysqli_real_escape_string($conn, $exerciseVideo);
         $exerciseMuscleGroup = $_POST['exerciseMuscleGroup'];
         $exerciseMuscle = $_POST['exerciseMuscle'];
-        $exerciseAttributes = join($_POST['attributes'], " , ");  
-        $sql = "INSERT INTO exercises (Exercise, musclegroup, muscle, video, dateAdded) VALUES ('" . $exerciseName . "',' " . $exerciseMuscleGroup . "','" . $exerciseMuscle . "','" . $exerciseVideo . "','" . $today ."')";
+        $exerciseAttributes = join($_POST['attributes'], ";");  
+        $sql = "INSERT INTO exercises (Exercise, Attributes, musclegroup, muscle, video, dateAdded) VALUES ('" . $exerciseName . "','" . $exerciseAttributes . "','" . $exerciseMuscleGroup . "','" . $exerciseMuscle . "','" . $exerciseVideo . "','" . $today ."')";
         if (mysqli_query($conn, $sql)) {
         } else {
             echo "Error: " . $sql . "<br>" . mysqli_error($conn);
@@ -298,10 +298,11 @@ function showHint(str) {
                                                 Attributes:
                                             </td>
                                             <td>
-                                                <input type="checkbox" name="attributes[]" value="Sets">Sets<br>
                                                 <input type="checkbox" name="attributes[]" value="Reps">Reps<br>
-                                                <input type="checkbox" name="attributes[]" value="Weight">Weight<br>
+                                                <input type="checkbox" name="attributes[]" value="Sets">Sets<br>
                                                 <input type="checkbox" name="attributes[]" value="Duration">Duration<br>
+                                                <input type="checkbox" name="attributes[]" value="Weight">Weight<br>
+                                                
                                             </td>
                                         </tr>
                                         <tr>
