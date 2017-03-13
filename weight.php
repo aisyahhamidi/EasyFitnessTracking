@@ -1,9 +1,10 @@
 <?php
+    if(!isset($_COOKIE['user'])){header( 'Location: index.php' ) ;}
     //Connection details
     $servername = "localhost";
     $details = parse_ini_file("creds.ini");
-$username = $details['username'];
-$password = $details['password'];
+    $username = $details['username'];
+    $password = $details['password'];
     $dbname = "fitness";
     $today =  date("Y-m-d");
     // Create connection
@@ -12,12 +13,7 @@ $password = $details['password'];
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }   
-    //Get last weighed
-    $sql = "SELECT * FROM weight ORDER BY id DESC LIMIT 1";
-    $lastAll = mysqli_query($conn, $sql);
-    $lastArray = mysqli_fetch_assoc($lastAll);
-    $last = $lastArray['date'];
-    if($last==$today){$class='alert alert-success';}else{$class='alert alert-warning';};
+    
     if(isset($_POST['submit'])){
         if(is_uploaded_file($_FILES['picFrontOn']['tmp_name'])){
             #Front
@@ -42,8 +38,13 @@ $password = $details['password'];
             echo "Error: " . $sql . "<br>" . mysqli_error($conn);
             }
     }
-
-    if(!isset($_COOKIE['user'])){header( 'Location: index.php' ) ;}
+    //Get last weighed
+    $sql = "SELECT * FROM weight ORDER BY id DESC LIMIT 1";
+    $lastAll = mysqli_query($conn, $sql);
+    $lastArray = mysqli_fetch_assoc($lastAll);
+    $last = $lastArray['date'];
+    if($last==$today){$class='alert alert-success';}else{$class='alert alert-warning';};
+    
 
 ?>
 <!DOCTYPE html>

@@ -1,10 +1,11 @@
 <?php
+    if(!isset($_COOKIE['user'])){header( 'Location: index.php' ) ;}
     //variables
     //Connection details
     $servername = "localhost";
     $details = parse_ini_file("creds.ini");
-$username = $details['username'];
-$password = $details['password'];
+    $username = $details['username'];
+    $password = $details['password'];
     $dbname = "fitness";
     $today =  date("Y-m-d");
     // Create connection
@@ -14,11 +15,7 @@ $password = $details['password'];
         die("Connection failed: " . mysqli_connect_error());
     }
 
-    $sql = "SELECT * FROM steps ORDER BY id DESC LIMIT 1";
-    $lastAll = mysqli_query($conn, $sql);
-    $lastArray = mysqli_fetch_assoc($lastAll);
-    $last = $lastArray['date'];
-    if($last==$today){$class='alert alert-success';}else{$class='alert alert-warning';};
+    
 
 
     if(isset($_POST['submit'])){
@@ -28,7 +25,11 @@ $password = $details['password'];
         mysqli_query($conn, $sql);
     }
 
-    if(!isset($_COOKIE['user'])){header( 'Location: index.php' ) ;}
+    $sql = "SELECT * FROM steps ORDER BY id DESC LIMIT 1";
+    $lastAll = mysqli_query($conn, $sql);
+    $lastArray = mysqli_fetch_assoc($lastAll);
+    $last = $lastArray['date'];
+    if($last==$today){$class='alert alert-success';}else{$class='alert alert-warning';};
 ?>
 <!DOCTYPE html>
 <html lang="en">
