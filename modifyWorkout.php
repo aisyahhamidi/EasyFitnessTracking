@@ -31,12 +31,12 @@ if(isset($_POST['submitB'])){
 }
 //Adding an Exercise
 if(isset($_POST['exerciseSubmit'])){
-  echo("POST SET");
         $exerciseName = $_POST['exerciseName'];
         $exerciseVideo = $_POST['exerciseVideo'];
         $exerciseVideo = mysqli_real_escape_string($conn, $exerciseVideo);
         $exerciseMuscleGroup = $_POST['exerciseMuscleGroup'];
         $exerciseMuscle = $_POST['exerciseMuscle'];
+        $exerciseAttributes = join($_POST['attributes'], " , ");  
         $sql = "INSERT INTO exercises (Exercise, musclegroup, muscle, video, dateAdded) VALUES ('" . $exerciseName . "',' " . $exerciseMuscleGroup . "','" . $exerciseMuscle . "','" . $exerciseVideo . "','" . $today ."')";
         if (mysqli_query($conn, $sql)) {
         } else {
@@ -291,6 +291,17 @@ function showHint(str) {
                                             </td>
                                             <td>
                                                 <input name="exerciseMuscle" type="text">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Attributes:
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="attributes[]" value="Sets">Sets<br>
+                                                <input type="checkbox" name="attributes[]" value="Reps">Reps<br>
+                                                <input type="checkbox" name="attributes[]" value="Weight">Weight<br>
+                                                <input type="checkbox" name="attributes[]" value="Duration">Duration<br>
                                             </td>
                                         </tr>
                                         <tr>
