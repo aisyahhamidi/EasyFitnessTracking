@@ -56,12 +56,26 @@ while($row = mysqli_fetch_assoc($result)) {
   $exercises = $row['a'];
   $workoutA = explode(";", $exercises);
 }
+$workoutAmuscles = array();
+foreach($workoutA as $current) {
+  $sql = "SELECT * FROM exercises WHERE Exercise='" . $current ."'";
+  $result = mysqli_query($conn, $sql);
+  $result = mysqli_fetch_array($result,MYSQLI_ASSOC);
+  array_push($workoutAmuscles, $result);
+}
 //Get workout B
 $sql = "SELECT b FROM workoutaba";
 $result = mysqli_query($conn, $sql);
 while($row = mysqli_fetch_assoc($result)) {
   $exercises = $row['b'];
   $workoutB = explode(";", $exercises);
+}
+$workoutBmuscles = array();
+foreach($workoutB as $current) {
+  $sql = "SELECT * FROM exercises WHERE Exercise='" . $current ."'";
+  $result = mysqli_query($conn, $sql);
+  $result = mysqli_fetch_array($result,MYSQLI_ASSOC);
+  array_push($workoutBmuscles, $result);
 }
 //Get exercises
 $sql = "SELECT * from exercises";
@@ -179,8 +193,8 @@ function showHint(str) {
                     <input type="hidden" name="newWorkoutA[]" value="A">
                     <?php
                       #Generate the list of workout A exercises
-                      foreach ($workoutA as $exercise) {
-                        echo('<li class="ui-state-default">'.$exercise.'<input type="hidden" name="newWorkoutA[]" value="'. $exercise .'"></li>');
+                      foreach ($workoutAmuscles as $exercise) {
+                        echo('<li class="ui-state-default '. $exercise['musclegroup'] .'">'.$exercise['Exercise'].'<input type="hidden" name="newWorkoutA[]" value="'. $exercise['Exercise'] .'"></li>');
                       }
                     ?>
                   </ul>
@@ -196,8 +210,8 @@ function showHint(str) {
                     <input type="hidden" name="newWorkoutB[]" value="B">
                   <?php
                       #Generate the list of workout B exercises
-                      foreach ($workoutB as $exercise) {
-                        echo('<li class="ui-state-default">'.$exercise.'<input type="hidden" name="newWorkoutB[]" value="'. $exercise .'"></li>');
+                      foreach ($workoutBmuscles as $exercise) {
+                        echo('<li class="ui-state-default '. $exercise['musclegroup'] .'">'.$exercise['Exercise'].'<input type="hidden" name="newWorkoutB[]" value="'. $exercise['Exercise'] .'"></li>');
                       }
                     ?>
                   </ul>
