@@ -64,10 +64,10 @@ while($row = mysqli_fetch_assoc($result)) {
   $workoutB = explode(";", $exercises);
 }
 //Get exercises
-$sql = "SELECT Exercise from exercises";
+$sql = "SELECT * from exercises";
 $result = mysqli_query($conn, $sql);
 while($row = mysqli_fetch_assoc($result)) {
-  $exercise = $row['Exercise'];
+  $exercise = $row;
   array_push($allExercises, $exercise);
 }
 
@@ -94,6 +94,11 @@ while($row = mysqli_fetch_assoc($result)) {
     ul { list-style-type: none; margin: 0; padding: 0; margin-bottom: 10px; }
     li { margin: 5px; padding: 5px; width: 150px; }
     .container-fluid{text-align: center;}
+    .ui-state-default{border-radius: 5px;}
+    .legs{border:2px solid #182E8F;  background-color: #C9C9F0;}
+    .arms{border:2px solid #641884;  background-color: #E7B3F0;}
+    .back{border:2px solid #146804;  background-color: #D6F0C9;}
+    .torso{border:2px solid #935E20;  background-color: #FFE8AA;}
   
   </style>
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -216,7 +221,7 @@ function showHint(str) {
                                 <ul >
                                   <?php
                                     for($i = 0; $i < sizeof($allExercises); $i += 3){
-                                      echo('<li id="removeable" class="ui-state-default exercise">'. $allExercises[$i] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i] .'"></li>');
+                                      echo('<li id="removeable" class="ui-state-default exercise '. $allExercises[$i]['musclegroup'] .'">'. $allExercises[$i]['Exercise'] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i]['Exercise'] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i]['Exercise'] .'"></li>');
 
                                     }
                                   ?>
@@ -226,7 +231,7 @@ function showHint(str) {
                                 <ul >
                                 <?php
                                     for($i = 1; $i < sizeof($allExercises); $i += 3){
-                                      echo('<li id="removeable" class="ui-state-default exercise">'. $allExercises[$i] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i] .'"></li>');
+                                      echo('<li id="removeable" class="ui-state-default exercise '. $allExercises[$i]['musclegroup'] .'">'. $allExercises[$i]['Exercise'] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i]['Exercise'] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i]['Exercise'] .'"></li>');
 
                                     }
                                   ?>
@@ -237,7 +242,7 @@ function showHint(str) {
                                 <ul >
                                   <?php
                                     for($i = 2; $i < sizeof($allExercises); $i += 3){
-                                      echo('<li id="removeable" class="ui-state-default exercise">'. $allExercises[$i] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i] .'"></li>');
+                                      echo('<li id="removeable" class="ui-state-default exercise '. $allExercises[$i]['musclegroup'] .'">'. $allExercises[$i]['Exercise'] .'<input type="hidden" name="newWorkoutA[]" value="'. $allExercises[$i]['Exercise'] .'"><input type="hidden" name="newWorkoutB[]" value="'. $allExercises[$i]['Exercise'] .'"></li>');
 
                                     }
                                   ?>

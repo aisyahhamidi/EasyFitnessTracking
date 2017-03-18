@@ -23,34 +23,29 @@ if (!$conn) {
 $sql = "SELECT * from exercises";
 $result = mysqli_query($conn, $sql);
 while($row = mysqli_fetch_assoc($result)) {
-        array_push($exercises, $row['Exercise']);
+        array_push($exercises, $row);
 }
-
 // get the q parameter from URL
 $q = $_REQUEST["q"];
 
 $hint = "";
-
+$returned = array();
 // lookup all hints from array if $q is different from "" 
 if ($q !== "") {
     $q = strtolower($q);
     $len=strlen($q);
     foreach($exercises as $name) {
-        if (stristr($q, substr($name, 0, $len))) {
-            if ($hint === "") {
-                $hint = $name;
-            } else {
-                $hint .= ", $name";
-            }
+        if (stristr($q, substr($name['Exercise'], 0, $len))) {
+            array_push($returned, $name);
+            $hint = "yes";
         }
     }
 }
 if($hint === ""){
     echo("no suggestion");
 }else{
-    $all =  explode(",", $hint);
-    foreach ($all as $item) {
-      echo('<li id="removeable" class="ui-state-default exercise ui-draggable ui-draggable-handle">'. $item .'<input type="hidden" name="newWorkoutA[]" value="'. $item .'"><input type="hidden" name="newWorkoutB[]" value="'. $item .'"></li>');
+    foreach ($returned as $item) {
+      echo('<li id="removeable" class="ui-state-default exercise ui-draggable ui-draggable-handle '. $item['musclegroup'] .'">'. $item['Exercise'] .'<input type="hidden" name="newWorkoutA[]" value="'. $item['Exercise'] .'"><input type="hidden" name="newWorkoutB[]" value="'. $item['Exercise'] .'"></li>');
 }
 }
 ?>
